@@ -21,7 +21,7 @@ public class CalculatorADT implements IStack<Integer> {
         return stack.pop();
     }
 
-    //method to recognize the operation 
+    //method to operate the "value1-operator-value2"
     @Override
     public Integer operation(char operator, Integer value1, Integer value2) {
         switch (operator) {
@@ -40,20 +40,42 @@ public class CalculatorADT implements IStack<Integer> {
         }
     }
     
-        //Method to consider postfix 
-        public int evaluatePostfix(String expression) {
-            for (char c : expression.toCharArray()) {
-                if (Character.isDigit(c)) {
-                    push(Character.getNumericValue(c));
-                } else {
-                    int value2 = pop();
-                    int value1 = pop();
-                    int result = operation(c, value1, value2);
-                    push(result);
-                }
+    //Evaluates the value of the postfix expression (A whole String line)
+    public int evaluatePostfix(String expression) {
+        String[] tokens = expression.split(" ");
+        for (String token : tokens) {
+            if (isNumeric(token)) {
+                push(Integer.parseInt(token));
+            } else if (isOperator(token)) { 
+                int value2 = pop();
+                int value1 = pop();
+                int result = operation(token.charAt(0), value1, value2);
+                push(result);
+            } else {
+                throw new IllegalArgumentException("Expresión no válida: " + token);
             }
-            return pop();
+        }
+        return pop(); // Last value is returned
+    }
+    
+        //Verify if a String is a num or a char.
+        private boolean isNumeric(String str) {
+            try {
+                Integer.parseInt(str);
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
 
+        //Verify if a string is an operator
+        private boolean isOperator(String str){
+            if(str.equals("+") || str.equals("-") || str.equals("/") || str.equals("*")){
+                return true;
+            }
+            else{
+                return false;
+            }
         }
 
 
